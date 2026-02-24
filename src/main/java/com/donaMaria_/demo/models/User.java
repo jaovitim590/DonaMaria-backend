@@ -34,7 +34,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role  role;
 
-    private Instant data_criado;
+    private Instant create_date;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

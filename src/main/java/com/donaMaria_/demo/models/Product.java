@@ -32,6 +32,6 @@ public class Product {
 
     private boolean featured;
 
-    private Instant data_criado;
+    private Instant create_date;
 
 }

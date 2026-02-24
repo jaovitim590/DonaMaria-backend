@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Entity
 @Getter
 @Setter
@@ -26,4 +28,6 @@ public class OrderItem {
     private Product product;
 
     private Integer quantity;
+
+    private Instant create_date;
 }
