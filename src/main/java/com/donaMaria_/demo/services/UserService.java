@@ -2,6 +2,7 @@ package com.donaMaria_.demo.services;
 
 import com.donaMaria_.demo.Dtos.ReqUserDto;
 import com.donaMaria_.demo.Dtos.ResUserDto;
+import com.donaMaria_.demo.Dtos.UpdateUserDto;
 import com.donaMaria_.demo.exceptions.EmailJaCadastradoException;
 import com.donaMaria_.demo.exceptions.RecursoNaoEncontradoException;
 import com.donaMaria_.demo.exceptions.RoleInvalidaException;
@@ -14,14 +15,17 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
+    private final BCryptPasswordEncoder encoder;
 
-    @Autowired
-    private BCryptPasswordEncoder encoder;
+    public UserService(UserRepository repository, BCryptPasswordEncoder encoder) {
+        this.repository = repository;
+        this.encoder = encoder;
+    }
 
     public User findByEmail(String email){
         User user = repository.findByEmail(email);
@@ -32,7 +36,7 @@ public class UserService {
     }
 
     public User createUser(ReqUserDto userDto){
-        if (repository.existsByEmail(userDto.email())) {
+        if (repository.existsByEmail(userDto.email())){
             throw new EmailJaCadastradoException();
         }
 
@@ -70,7 +74,39 @@ public class UserService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário"));
     }
 
+    public User updateUser(UpdateUserDto userDto){
+        User existingUser = repository.findById(userDto.id())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("user"));
 
+        Optional.ofNullable(userDto.name())
+                .filter(name -> !name.isBlank())
+                .ifPresent(existingUser::setName);
 
+        Optional.ofNullable(userDto.email())
+                .filter(email -> !email.isBlank())
+                .ifPresent(existingUser::setEmail);
+
+        Optional.ofNullable(userDto.password())
+                .filter(pwd -> !pwd.isBlank())
+                .map(encoder::encode)
+                .ifPresent(existingUser::setPassword);
+
+        repository.save(existingUser);
+
+        return existingUser;
+    }
+
+    public Long countUser(){
+        return repository.count();
+    }
+
+    public boolean existByEmail(String email) {
+        return repository.existsByEmail(email);
+    }
+
+    public boolean isadmin(String email) {
+        User user = repository.findByEmail(email);
+        return user != null && user.getRole() == Role.ADMIN;
+    }
 
 }
