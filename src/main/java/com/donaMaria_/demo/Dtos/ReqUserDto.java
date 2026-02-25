@@ -1,22 +1,19 @@
 package com.donaMaria_.demo.Dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 
 public record ReqUserDto(
         @NotBlank
-        @Min(4)
+        @Size(min = 4 , message = "Nome muito curto")
         String name,
 
         @NotBlank
-        @Email
+        @Email(message = "Email inválido")
         String email,
 
         @NotBlank
-        @Min(5)
+        @Size(min = 5, message = "Senha muito curta")
         String password,
 
         @NotBlank
