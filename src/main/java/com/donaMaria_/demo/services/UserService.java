@@ -1,7 +1,6 @@
 package com.donaMaria_.demo.services;
 
 import com.donaMaria_.demo.Dtos.ReqUserDto;
-import com.donaMaria_.demo.Dtos.ResUserDto;
 import com.donaMaria_.demo.Dtos.UpdateUserDto;
 import com.donaMaria_.demo.exceptions.EmailJaCadastradoException;
 import com.donaMaria_.demo.exceptions.RecursoNaoEncontradoException;
@@ -9,7 +8,6 @@ import com.donaMaria_.demo.exceptions.RoleInvalidaException;
 import com.donaMaria_.demo.models.Role;
 import com.donaMaria_.demo.models.User;
 import com.donaMaria_.demo.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

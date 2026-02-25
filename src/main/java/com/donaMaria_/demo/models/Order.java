@@ -33,5 +33,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private Instant create_date;
 }
