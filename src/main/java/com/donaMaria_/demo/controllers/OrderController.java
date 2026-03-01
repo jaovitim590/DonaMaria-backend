@@ -2,9 +2,9 @@ package com.donaMaria_.demo.controllers;
 
 import com.donaMaria_.demo.Dtos.ReqOrderDto;
 import com.donaMaria_.demo.Dtos.ResOrderDto;
-import com.donaMaria_.demo.services.JwtService;
-import com.donaMaria_.demo.services.OrderItemService;
+import com.donaMaria_.demo.Dtos.UpdateOrderDto;
 import com.donaMaria_.demo.services.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/order")
 public class OrderController {
     private final OrderService service;
-    private final OrderItemService itemService;
 
-    public OrderController(OrderService service, OrderItemService itemService, JwtService jwtService){
+    public OrderController(OrderService service) {
         this.service = service;
-        this.itemService = itemService;
     }
 
 
@@ -27,17 +25,50 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createOrder(@AuthenticationPrincipal UserDetails user,
                                          @RequestBody ReqOrderDto data) {
-
         String email = user.getUsername();
 
-        if (service.validateOrder(data, email)) {
             try {
-                ResOrderDto res = service.createOrder(data);
+                ResOrderDto res = service.createOrder(data, email);
                 return ResponseEntity.ok(res);
             } catch (Exception e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
+    }
+
+    @PatchMapping("/cancelar/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> cancelOrder(@AuthenticationPrincipal UserDetails user,
+                                         @PathVariable Long id) {
+        String email = user.getUsername();
+
+        try {
+            ResOrderDto res = service.cancelOrder(id, email);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.badRequest().build();
+    }
+
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+        try {
+            service.deleteOrder(id);
+            return ResponseEntity.ok("deletado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> changeStatusOrder(@PathVariable Long id, @RequestBody @Valid UpdateOrderDto data){
+        try {
+            ResOrderDto res = service.updateOrderStatus(id, data);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

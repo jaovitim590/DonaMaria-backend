@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,8 +37,8 @@ public class OrderService {
         this.userService = userService;
     }
 
-    public ResOrderDto createOrder(ReqOrderDto dto) {
-        User user = userService.findById(dto.userId());
+    public ResOrderDto createOrder(ReqOrderDto dto, String email) {
+        User user = userService.findByEmail(email);
 
         Order order = new Order();
         order.setUser(user);
@@ -81,6 +82,25 @@ public class OrderService {
         return toResOrderDto(repository.save(order));
     }
 
+    public ResOrderDto cancelOrder(Long orderId, String email){
+        Order order = repository.findById(orderId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("order"));
+        if (!order.getUser().getEmail().equals(email)) {
+            throw new IllegalArgumentException(
+                    "Não é possível cancelar pedido de outro usuário."
+            );
+        }
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("Pedido já está cancelado.");
+        }
+        order.setStatus(OrderStatus.CANCELLED);
+
+        repository.save(order);
+
+        return toResOrderDto(order);
+
+    }
+
     public List<ResOrderDto> getAllOrders() {
         return repository.findAll()
                 .stream()
@@ -122,11 +142,5 @@ public class OrderService {
                 order.getTotal(),
                 itemDtos
         );
-    }
-
-    public boolean validateOrder(ReqOrderDto data, String email){
-        User user = userService.findByEmail(email);
-
-        return data.userId().equals(user.getId());
     }
 }
