@@ -26,19 +26,18 @@ public class OrderService {
     private final OrderRepository repository;
     private final OrderItemService orderItemService;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public OrderService(OrderRepository repository, OrderItemService orderItemService,
-                        ProductRepository productRepository, UserRepository userRepository) {
+                        ProductRepository productRepository, UserService userService) {
         this.repository = repository;
         this.orderItemService = orderItemService;
         this.productRepository = productRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public ResOrderDto createOrder(ReqOrderDto dto) {
-        User user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("user"));
+        User user = userService.findById(dto.userId());
 
         Order order = new Order();
         order.setUser(user);
@@ -123,5 +122,11 @@ public class OrderService {
                 order.getTotal(),
                 itemDtos
         );
+    }
+
+    public boolean validateOrder(ReqOrderDto data, String email){
+        User user = userService.findByEmail(email);
+
+        return data.userId().equals(user.getId());
     }
 }

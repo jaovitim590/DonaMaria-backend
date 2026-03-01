@@ -107,4 +107,9 @@ public class UserService {
         return user != null && user.getRole() == Role.ADMIN;
     }
 
+    public User findById(Long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("usuario"));
+    }
+
 }
