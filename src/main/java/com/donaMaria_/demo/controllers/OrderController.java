@@ -89,6 +89,11 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getMyOrders(@AuthenticationPrincipal UserDetails user){
         String email = user.getUsername();
-
+        try{
+            List<ResOrderDto>  orders = service.getOrdersByEmail(email);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
