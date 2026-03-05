@@ -6,6 +6,14 @@ VALUES (
            'ADMIN',
             CURRENT_TIMESTAMP
        );
+INSERT INTO usuarios (name, email, password, role, create_date)
+VALUES (
+           'teste',
+           'teste@gmail.com',
+           '$2a$07$NQLkSMkW8Jij.SHCLUD/DuhfinNlBZoNOhDWIegM59dCfOGq5tg2u',
+           'USER',
+           CURRENT_TIMESTAMP
+       );
 
 
 -- ======================

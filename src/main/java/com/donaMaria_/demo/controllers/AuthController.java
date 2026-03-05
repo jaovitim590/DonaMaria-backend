@@ -37,8 +37,12 @@ public class AuthController {
         if (userService.existByEmail(dto.email())){
             throw new EmailJaCadastradoException();
         }
-        userService.createUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("registrado com sucesso!");
+        User user = userService.createUser(dto);
+        String token = jwtService.generateToken(user);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
