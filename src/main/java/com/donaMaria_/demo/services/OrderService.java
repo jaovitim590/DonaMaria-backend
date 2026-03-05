@@ -119,6 +119,15 @@ public class OrderService {
         return repository.count();
     }
 
+    public List<ResOrderDto> getOrdersByEmail(String email){
+        User user = userService.findByEmail(email);
+
+        return repository.findByUser(user)
+                .stream()
+                .map(this::toResOrderDto)
+                .toList();
+    }
+
     private ResOrderDto toResOrderDto(Order order) {
         List<ResOrderItemDto> itemDtos = order.getItems() == null ? List.of() :
                 order.getItems().stream()
