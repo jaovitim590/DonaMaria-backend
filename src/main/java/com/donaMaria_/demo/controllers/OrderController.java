@@ -74,7 +74,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllOrders(){
         try {
